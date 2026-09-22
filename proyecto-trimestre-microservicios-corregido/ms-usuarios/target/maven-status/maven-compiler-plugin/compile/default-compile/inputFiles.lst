@@ -1,0 +1,8 @@
+/home/juan/Escritorio/trabajo final angarita/proyecto-trimestre-microservicios-corregidoActualizado/proyecto-trimestre-microservicios-corregido/ms-usuarios/src/main/java/com/tienda/usuarios/UsuariosApplication.java
+/home/juan/Escritorio/trabajo final angarita/proyecto-trimestre-microservicios-corregidoActualizado/proyecto-trimestre-microservicios-corregido/ms-usuarios/src/main/java/com/tienda/usuarios/config/ManejadorErrores.java
+/home/juan/Escritorio/trabajo final angarita/proyecto-trimestre-microservicios-corregidoActualizado/proyecto-trimestre-microservicios-corregido/ms-usuarios/src/main/java/com/tienda/usuarios/controller/UsuarioController.java
+/home/juan/Escritorio/trabajo final angarita/proyecto-trimestre-microservicios-corregidoActualizado/proyecto-trimestre-microservicios-corregido/ms-usuarios/src/main/java/com/tienda/usuarios/model/LoginRequest.java
+/home/juan/Escritorio/trabajo final angarita/proyecto-trimestre-microservicios-corregidoActualizado/proyecto-trimestre-microservicios-corregido/ms-usuarios/src/main/java/com/tienda/usuarios/model/RegistroRequest.java
+/home/juan/Escritorio/trabajo final angarita/proyecto-trimestre-microservicios-corregidoActualizado/proyecto-trimestre-microservicios-corregido/ms-usuarios/src/main/java/com/tienda/usuarios/model/Usuario.java
+/home/juan/Escritorio/trabajo final angarita/proyecto-trimestre-microservicios-corregidoActualizado/proyecto-trimestre-microservicios-corregido/ms-usuarios/src/main/java/com/tienda/usuarios/repository/UsuarioRepository.java
+/home/juan/Escritorio/trabajo final angarita/proyecto-trimestre-microservicios-corregidoActualizado/proyecto-trimestre-microservicios-corregido/ms-usuarios/src/main/java/com/tienda/usuarios/service/JwtService.java

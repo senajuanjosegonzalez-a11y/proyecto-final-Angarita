@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tienda · Microservicios</title>
+<style>
+  :root {
+    --tinta: #18252a;
+    --papel: #f2f5f0;
+    --superficie: #fffdf8;
+    --linea: #d6dfd8;
+    --acento: #c65b3d;
+    --acento-suave: #f7e4da;
+    --verde: #28735e;
+    --muted: #65756f;
+    font-family: 'Avenir Next', Avenir, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--papel) radial-gradient(#dce8df 0.7px, transparent 0.7px);
+    background-size: 18px 18px;
+    color: var(--tinta);
+    min-height: 100vh;
+  }
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 26px max(24px, calc((100vw - 1120px) / 2));
+    background: var(--tinta);
+    color: #f9f5ea;
+    border-bottom: 5px solid var(--acento);
+  }
+  header h1 { margin: 0 0 6px; font-family: Georgia, serif; font-size: clamp(1.4rem, 3vw, 2rem); letter-spacing: 0; }
+  header p { margin: 0; font-size: 0.8rem; color: #b9ccc1; letter-spacing: 0.03em; }
+  #estado-sesion { font-size: 0.85rem; text-align: right; white-space: nowrap; }
+  #estado-sesion button {
+    margin-left: 10px; background: transparent; color: #f9f5ea; border: 1px solid #9db5a8;
+    border-radius: 999px; padding: 6px 13px; cursor: pointer; font-family: inherit;
+  }
+  #estado-sesion button:hover { border-color: #fff; background: rgba(255,255,255,0.1); }
+
+  main { max-width: 1120px; margin: 0 auto; padding: 42px 24px 80px; }
+
+  .panel {
+    border: 1px solid var(--linea);
+    border-radius: 14px;
+    background: rgba(255, 253, 248, 0.94);
+    padding: 26px 30px;
+    margin-bottom: 22px;
+    box-shadow: 0 12px 30px rgba(24, 37, 42, 0.07);
+  }
+  .panel h2 {
+    margin-top: 0;
+    font-family: Georgia, serif;
+    font-size: 1.25rem;
+    border-bottom: 1px solid var(--linea);
+    padding-bottom: 14px;
+    margin-bottom: 22px;
+  }
+
+  form.fila { display: flex; gap: 14px; flex-wrap: wrap; align-items: end; }
+  label { display: block; font-size: 0.72rem; color: var(--muted); margin-bottom: 6px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+  input {
+    font-family: inherit;
+    padding: 11px 12px;
+    border: 1px solid var(--linea);
+    border-radius: 8px;
+    background: #f8faf7;
+    min-width: 170px;
+    color: var(--tinta);
+  }
+  input:focus { outline: 3px solid var(--acento-suave); border-color: var(--acento); }
+
+  button.accion {
+    font-family: inherit;
+    background: var(--acento);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 18px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 700;
+    transition: transform 160ms ease, background 160ms ease;
+  }
+  button.accion:hover { background: #a94731; transform: translateY(-1px); }
+
+  .mensaje { font-size: 0.85rem; margin-top: 16px; }
+  .mensaje.error { color: var(--acento); }
+  .mensaje.ok { color: var(--verde); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  th, td { text-align: left; padding: 13px 10px; border-bottom: 1px solid var(--linea); }
+  th { font-weight: 700; color: var(--muted); font-size: 0.7rem; letter-spacing: 0.05em; text-transform: uppercase; }
+  tbody tr:hover { background: #f5f8f3; }
+  td.num { text-align: right; }
+
+  .compra-inline { display: flex; gap: 6px; align-items: center; }
+  .compra-inline input { width: 62px; min-width: unset; padding: 9px 8px; }
+  .compra-inline button { padding: 9px 13px; }
+  .oculto { display: none; }
+  #vacio { color: var(--muted); font-size: 0.9rem; }
+
+  @media (max-width: 720px) {
+    header { align-items: flex-start; flex-direction: column; padding: 22px 18px; }
+    #estado-sesion { text-align: left; }
+    main { padding: 24px 14px 56px; }
+    .panel { padding: 22px 18px; overflow-x: auto; }
+    .panel > div { gap: 22px !important; }
+    form.fila > div, form.fila input { width: 100%; }
+    form.fila button { width: 100%; }
+    table { min-width: 620px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Tienda · Arquitectura de Microservicios</h1>
+    <p>Gateway → Usuarios (Spring Boot) · Productos / Compras (Node.js) · JWT compartido</p>
+  </div>
+  <div id="estado-sesion"></div>
+</header>
+
+<main>
+
+  <section class="panel" id="panel-auth">
+    <h2>1. Cuenta</h2>
+    <div style="display:flex; gap:40px; flex-wrap:wrap;">
+      <div>
+        <form class="fila" id="form-registro">
+          <div><label>Nombres</label><input name="nombres" required></div>
+          <div><label>Apellidos</label><input name="apellidos" required></div>
+          <div><label>Email</label><input type="email" name="email" required></div>
+          <div><label>Contraseña</label><input type="password" name="contrasena" required minlength="6"></div>
+          <button class="accion" type="submit">Registrarme</button>
+        </form>
+      </div>
+      <div>
+        <form class="fila" id="form-login">
+          <div><label>Email</label><input type="email" name="email" required></div>
+          <div><label>Contraseña</label><input type="password" name="contrasena" required></div>
+          <button class="accion" type="submit">Ingresar</button>
+        </form>
+      </div>
+    </div>
+    <p class="mensaje" id="msg-auth"></p>
+  </section>
+
+  <section class="panel oculto" id="panel-usuarios">
+    <h2>2. Usuarios registrados (requiere JWT)</h2>
+    <table>
+      <thead>
+        <tr><th>ID</th><th>Nombres</th><th>Apellidos</th><th>Email</th><th>Rol</th></tr>
+      </thead>
+      <tbody id="tabla-usuarios"></tbody>
+    </table>
+    <p class="mensaje" id="msg-usuarios"></p>
+  </section>
+
+  <section class="panel oculto" id="panel-productos">
+    <h2>3. Catálogo (requiere JWT)</h2>
+    <table>
+      <thead>
+        <tr><th>Producto</th><th>Descripción</th><th>Precio</th><th>Stock</th><th>Comprar</th></tr>
+      </thead>
+      <tbody id="tabla-productos"></tbody>
+    </table>
+    <p class="mensaje" id="msg-productos"></p>
+  </section>
+
+  <section class="panel oculto" id="panel-compras">
+    <h2>4. Mis compras</h2>
+    <table>
+      <thead><tr><th>Fecha</th><th>Producto</th><th>Cant.</th><th>Total</th></tr></thead>
+      <tbody id="tabla-compras"></tbody>
+    </table>
+    <p id="vacio" class="oculto">Todavía no tienes compras registradas.</p>
+  </section>
+
+</main>
+
+<script>
+  const GATEWAY = 'http://localhost:3000';
+  let token = null;
+  let email = null;
+
+  const $ = (sel) => document.querySelector(sel);
+
+  function mostrarSesion() {
+    if (token) {
+      $('#estado-sesion').innerHTML = `Conectado como <strong>${email}</strong> <button id="btn-salir">Salir</button>`;
+      $('#btn-salir').onclick = cerrarSesion;
+      $('#panel-usuarios').classList.remove('oculto');
+      $('#panel-productos').classList.remove('oculto');
+      $('#panel-compras').classList.remove('oculto');
+      cargarUsuarios();
+      cargarProductos();
+      cargarCompras();
+    } else {
+      $('#estado-sesion').innerHTML = 'Sin iniciar sesión';
+      $('#panel-usuarios').classList.add('oculto');
+      $('#panel-productos').classList.add('oculto');
+      $('#panel-compras').classList.add('oculto');
+    }
+  }
+
+  function cerrarSesion() {
+    token = null; email = null; mostrarSesion();
+  }
+
+  $('#form-registro').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const datos = Object.fromEntries(new FormData(e.target));
+    const msg = $('#msg-auth');
+    try {
+      const r = await fetch(`${GATEWAY}/api/usuarios/registrar`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      });
+      const cuerpo = await r.json();
+      if (!r.ok) throw new Error(cuerpo.error || 'No se pudo registrar');
+      msg.textContent = 'Cuenta creada. Ya puedes iniciar sesión.';
+      msg.className = 'mensaje ok';
+      e.target.reset();
+    } catch (err) {
+      msg.textContent = err.message;
+      msg.className = 'mensaje error';
+    }
+  });
+
+  $('#form-login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const datos = Object.fromEntries(new FormData(e.target));
+    const msg = $('#msg-auth');
+    try {
+      const r = await fetch(`${GATEWAY}/api/usuarios/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      });
+      const cuerpo = await r.json();
+      if (!r.ok) throw new Error(cuerpo.error || 'Credenciales inválidas');
+      token = cuerpo.token;
+      email = cuerpo.email;
+      msg.textContent = '';
+      e.target.reset();
+      mostrarSesion();
+    } catch (err) {
+      msg.textContent = err.message;
+      msg.className = 'mensaje error';
+    }
+  });
+
+  async function cargarUsuarios() {
+    const msg = $('#msg-usuarios');
+    try {
+      const r = await fetch(`${GATEWAY}/api/usuarios`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!r.ok) throw new Error('No se pudo cargar la lista de usuarios');
+      const usuarios = await r.json();
+      $('#tabla-usuarios').innerHTML = usuarios.map(u => `
+        <tr>
+          <td>${u.id}</td>
+          <td>${u.nombres}</td>
+          <td>${u.apellidos}</td>
+          <td>${u.email}</td>
+          <td>${u.rol}</td>
+        </tr>
+      `).join('');
+      msg.textContent = '';
+    } catch (err) {
+      msg.textContent = err.message;
+      msg.className = 'mensaje error';
+    }
+  }
+
+  async function cargarProductos() {
+    const msg = $('#msg-productos');
+    try {
+      const r = await fetch(`${GATEWAY}/api/productos`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!r.ok) throw new Error('No se pudo cargar el catálogo (token inválido)');
+      const productos = await r.json();
+      $('#tabla-productos').innerHTML = productos.map(p => `
+        <tr>
+          <td>${p.nombre}</td>
+          <td>${p.descripcion || ''}</td>
+          <td class="num">$${p.precio.toLocaleString('es-CO')}</td>
+          <td class="num">${p.stock}</td>
+          <td>
+            <div class="compra-inline">
+              <input type="number" min="1" max="${p.stock}" value="1" id="cant-${p.id}">
+              <button class="accion" onclick="comprar(${p.id})">Comprar</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+      msg.textContent = '';
+    } catch (err) {
+      msg.textContent = err.message;
+      msg.className = 'mensaje error';
+    }
+  }
+
+  async function comprar(id) {
+    const cantidad = Number($(`#cant-${id}`).value);
+    const msg = $('#msg-productos');
+    try {
+      const r = await fetch(`${GATEWAY}/api/compras`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ producto_id: id, cantidad })
+      });
+      const cuerpo = await r.json();
+      if (!r.ok) throw new Error(cuerpo.error || 'No se pudo completar la compra');
+      msg.textContent = `Compra registrada: ${cuerpo.cantidad} × ${cuerpo.producto_nombre}`;
+      msg.className = 'mensaje ok';
+      cargarProductos();
+      cargarCompras();
+    } catch (err) {
+      msg.textContent = err.message;
+      msg.className = 'mensaje error';
+    }
+  }
+
+  async function cargarCompras() {
+    const r = await fetch(`${GATEWAY}/api/compras`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!r.ok) return;
+    const compras = await r.json();
+    $('#vacio').classList.toggle('oculto', compras.length > 0);
+    $('#tabla-compras').innerHTML = compras.map(c => `
+      <tr>
+        <td>${new Date(c.fecha).toLocaleString('es-CO')}</td>
+        <td>${c.producto_nombre}</td>
+        <td class="num">${c.cantidad}</td>
+        <td class="num">$${c.total.toLocaleString('es-CO')}</td>
+      </tr>
+    `).join('');
+  }
+
+  mostrarSesion();
+</script>
+</body>
+</html>

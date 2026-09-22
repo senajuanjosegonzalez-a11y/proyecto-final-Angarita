@@ -1,0 +1,13 @@
+{
+  "name": "tienda-microservicios",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Orquestador: instala y levanta los 4 servicios (gateway, usuarios, productos, compras) con un solo comando",
+  "scripts": {
+    "setup": "npm install --prefix api-gateway && npm install --prefix ms-productos && npm install --prefix ms-compras && node scripts/copiar-env.js",
+    "dev": "concurrently -k -n GATEWAY,USUARIOS,PRODUCTOS,COMPRAS -c blue,green,yellow,magenta \"npm start --prefix api-gateway\" \"mvn -f ms-usuarios/pom.xml spring-boot:run\" \"npm start --prefix ms-productos\" \"npm start --prefix ms-compras\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  }
+}
